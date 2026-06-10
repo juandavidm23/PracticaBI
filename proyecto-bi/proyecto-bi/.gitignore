@@ -1,0 +1,7 @@
+// archivo .gitignore para no subir archivos innecesarios al repositorio
+.env
+__pycache__/    
+*.pyc
+*.pyo
+*.pyd
+README.md

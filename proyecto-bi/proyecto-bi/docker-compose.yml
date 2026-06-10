@@ -1,0 +1,60 @@
+version: "3.9"
+services:
+  # ── Base de Datos ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: crm_postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432"
+    networks:
+      - internal
+
+  # ── Backend FastAPI ────────────────────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: crm_backend
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - internal
+    volumes:
+      - ./backend:/app
+
+  # ── Metabase BI ────────────────────────────────────────────────────────────
+  metabase:
+    image: metabase/metabase:latest
+    container_name: crm_metabase
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB}
+      MB_DB_PORT: ${POSTGRES_PORT}
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: postgres
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:

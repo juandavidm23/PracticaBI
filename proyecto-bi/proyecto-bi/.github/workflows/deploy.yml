@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  # Nombre del job
+  run_pull:
+    name: run pull
+    # Se ejecuta en un runner de Ubuntu
+    runs-on: ubuntu-latest
+    # Pasos a ejecutar
+    steps:
+      - name: executing remote ssh commands using ssh
+        # Permite definir un ssh-action para ejecutar comandos remotos en un servidor a través de SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }} 
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.WORK_DIR }}
+            git fetch
+            git checkout ${{ secrets.MAIN_BRANCH}}
+            git pull
+            docker compose build
+            docker compose up -d
+            exit

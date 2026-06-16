@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-
+import pandas as pd
 
 class Settings(BaseSettings):
     # Base de datos

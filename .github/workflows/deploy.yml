@@ -25,6 +25,7 @@ jobs:
             git fetch
             git checkout ${{ secrets.MAIN_BRANCH}}
             git pull
+            cd proyecto-bi/proyecto-bi
             docker compose build
             docker compose up -d
             exit

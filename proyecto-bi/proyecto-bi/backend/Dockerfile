@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Dependencias Python
 COPY requirements.txt .
+# docker exec -it ID_CONTENEDOR bash
+# docker exec -it ID_CONTENEDOR sh
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
